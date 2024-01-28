@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/wuhewuhe/bybit.go.api/models"
+	"github.com/xuansky/bybit.go.api/models"
 )
 
 type marketTestSuite struct {

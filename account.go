@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/wuhewuhe/bybit.go.api/handlers"
+	"github.com/xuansky/bybit.go.api/handlers"
 )
 
 type AccountClient struct {
