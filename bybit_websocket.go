@@ -13,12 +13,14 @@ import (
 )
 
 type MessageHandler func(message string) error
+type ErrorHandler func(name string, err error)
 
 func (b *WebSocket) handleIncomingMessages() {
 	for {
 		_, message, err := b.conn.ReadMessage()
 		if err != nil {
 			fmt.Println("Error reading:", err)
+			b.onError("ReadMessage", err)
 			return
 		}
 
@@ -26,6 +28,7 @@ func (b *WebSocket) handleIncomingMessages() {
 			err := b.onMessage(string(message))
 			if err != nil {
 				fmt.Println("Error handling message:", err)
+				b.onError("OnMessage", err)
 				return
 			}
 		}
@@ -36,6 +39,10 @@ func (b *WebSocket) SetMessageHandler(handler MessageHandler) {
 	b.onMessage = handler
 }
 
+func (b *WebSocket) SetErrorHandler(handler ErrorHandler) {
+	b.onError = handler
+}
+
 type WebSocket struct {
 	conn         *websocket.Conn
 	url          string
@@ -44,6 +51,7 @@ type WebSocket struct {
 	maxAliveTime string
 	pingInterval int
 	onMessage    MessageHandler
+	onError      ErrorHandler
 	ctx          context.Context
 	cancel       context.CancelFunc
 }
@@ -129,6 +137,7 @@ func Ping(b *WebSocket) {
 			case <-ticker.C: // Wait until the ticker sends a signal
 				if err := b.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 					fmt.Println("Failed to send ping:", err)
+					b.onError("Ping", err)
 				}
 			case <-b.ctx.Done():
 				fmt.Println("Exit ping")

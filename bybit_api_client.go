@@ -206,6 +206,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 		if e != nil {
 			c.debug("failed to unmarshal json: %s", e)
 		}
+		fmt.Println("response error", res.StatusCode, string(data))
 		return nil, apiErr
 	}
 	return data, nil
